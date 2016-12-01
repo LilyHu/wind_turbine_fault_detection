@@ -3,11 +3,7 @@ import datetime as dt
 import pandas as pd
 
 class EnerconWindTurbineData(object):
-
-
     """
-	Initialises the class instance.
-
     Imports the data and returns arrays of SCADA & status data by
     calling import_data().
 
@@ -63,7 +59,7 @@ class EnerconWindTurbineData(object):
 	"Inverter_averages" and "Inverter_std_dev", are also added to
 	the SCADA data. These are the average and standard deviation of
 	all Inverter Temperature fields.
-	
+
 	WARNING: The data is not every 10 minutes. There are errors, 
 	large gaps in data, some values in between 10 minutes, and double values
 	for the same time
@@ -116,8 +112,7 @@ class EnerconWindTurbineData(object):
 
         self.scada_data = pd.DataFrame(self.scada_data)
 
-        # Add 2 extra columns to scada - Inverter_averages and
-        # Inverter_std_dev, as features
+        # Add 2 extra columns to scada - Inverter_averages and Inverter_std_dev - as features
         inverters = np.array([
             'CS101__Sys_1_inverter_1_cabinet_temp',
             'CS101__Sys_1_inverter_2_cabinet_temp',
@@ -133,17 +128,17 @@ class EnerconWindTurbineData(object):
         means = pd.Series(self.scada_data[inverters].mean(axis=1), name='Inverter_averages')
         stds = pd.Series(self.scada_data[inverters].std(axis=1), name='Inverter_std_dev')
     
-		# Save the scada data and the inverter means and standard deviations as "scada_data"
+	# Save the scada data and the inverter means and standard deviations as "scada_data"
         self.scada_data = pd.concat([self.scada_data, means, stds], axis=1)
 		
         # Convert the unix time in the "Time" column to pandas datetime and set the 'Time' column to be the index
         self.scada_data["Time"] = pd.to_datetime(self.scada_data["Time"], format='%d/%m/%Y %H:%M:%S')- pd.Timedelta('1h')
         self.scada_data = self.scada_data.set_index("Time", drop=True)
         
-		# Sort the data by timestamp
+	# Sort the data by timestamp
         self.scada_data.sort_index(inplace=True)
         
-		# Convert the unix time in the "Time" column to pandas datetime and set the 'Time' column to be the index
+	# Convert the unix time in the "Time" column to pandas datetime and set the 'Time' column to be the index
         self.status_data_wec = pd.DataFrame(self.status_data_wec)
         self.status_data_wec["Time"] = pd.to_datetime(self.status_data_wec["Time"], format='%d/%m/%Y %H:%M:%S')- pd.Timedelta('1h')
         self.status_data_rtu = pd.DataFrame(self.status_data_rtu)
@@ -288,7 +283,6 @@ class EnerconWindTurbineData(object):
         self.new_features['Diff_Avg_Sys_2_inverter_3']  = self.scada_data['CS101__Sys_2_inverter_3_cabinet_temp'] - self.new_features['Avg_Sys_2_inverters_cabinet_temp']
         self.new_features['Diff_Avg_Sys_2_inverter_4']  = self.scada_data['CS101__Sys_2_inverter_4_cabinet_temp'] - self.new_features['Avg_Sys_2_inverters_cabinet_temp']
                                                                           
-
         # Front and Rear Bearing Temperature
         self.new_features['Diff_font_rear_bearing'] = self.scada_data['CS101__Front_bearing_temp'] - self.scada_data['CS101__Rear_bearing_temp']
 
@@ -347,7 +341,7 @@ class EnerconWindTurbineData(object):
         self.new_features['Diff_nacelle_rotor_1_temp'] = self.scada_data['CS101__Nacelle_temp'] - self.scada_data['CS101__Rotor_temp_1'] 
         self.new_features['Diff_nacelle_rotor_2_temp'] = self.scada_data['CS101__Nacelle_temp'] - self.scada_data['CS101__Rotor_temp_2'] 
 
-    '''
+    	'''
 	Create the mean and standard deviation features. 
 	These calculations take a long time
 	'''
